@@ -1,0 +1,118 @@
+// IdeasQSolucionan — Schema Prisma 7
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  EMPLEADO
+}
+
+enum PedidoStatus {
+  PENDIENTE
+  LISTO
+  PROXIMO
+  URGENTE
+  ENTREGADO
+  CANCELADO
+}
+
+enum FormaPago {
+  EFECTIVO
+  TRANSFERENCIA
+  TARJETA
+}
+
+// ─── Modelos ─────────────────────────────────────────────────────────────────
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(EMPLEADO)
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  cotizaciones  Cotizacion[]
+  pedidos       Pedido[]
+  configuracion Configuracion?
+}
+
+model Cliente {
+  id           String       @id @default(cuid())
+  nombre       String
+  telefono     String?
+  email        String?
+  notas        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  pedidos      Pedido[]
+  cotizaciones Cotizacion[]
+}
+
+model Cotizacion {
+  id            String    @id @default(cuid())
+  folio         Int       @unique
+  fecha         DateTime  @default(now())
+  categoria     String
+  catLabel      String
+  clienteNombre String
+  clienteId     String?
+  cliente       Cliente?  @relation(fields: [clienteId], references: [id])
+  total         Float
+  costo         Float
+  iva           Float
+  detalles      Json
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  pedido        Pedido?
+}
+
+model Pedido {
+  id            String        @id @default(cuid())
+  folio         Int           @unique
+  cotizacionId  String?       @unique
+  cotizacion    Cotizacion?   @relation(fields: [cotizacionId], references: [id])
+  categoria     String
+  catLabel      String
+  clienteNombre String
+  clienteId     String?
+  cliente       Cliente?      @relation(fields: [clienteId], references: [id])
+  total         Float
+  costo         Float
+  iva           Float
+  status        PedidoStatus  @default(PENDIENTE)
+  anticipo      Float         @default(0)
+  formaPago     FormaPago?
+  telefono      String?
+  fechaEntrega  DateTime?
+  notas         String?
+  detalles      Json
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Configuracion {
+  id           String  @id @default(cuid())
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
+  horaObjetivo Float   @default(230)
+  horaLaser    Float   @default(30)
+  metaMensual  Float   @default(20000)
+}
+
+/// Contador global de folios — garantiza unicidad entre cotizaciones y pedidos
+model FolioCounter {
+  id      String @id @default("singleton")
+  current Int    @default(1)
+}
