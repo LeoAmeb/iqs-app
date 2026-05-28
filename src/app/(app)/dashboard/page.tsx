@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { Loader2Icon, TrendingUpIcon, CalendarClockIcon } from "lucide-react";
@@ -13,7 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { fmt, fmtFecha, cn } from "@/lib/utils";
-import type { PedidoStatus } from "@/generated/prisma";
+import type { PedidoStatus } from "@/generated/prisma/client";
 
 interface EntregaProxima {
   id: string;

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { fmt, folioStr, fmtFecha } from "@/lib/utils";
-import type { PedidoStatus } from "@/generated/prisma";
+import type { PedidoStatus } from "@/generated/prisma/client";
 
 interface PedidoResumen {
   id: string;

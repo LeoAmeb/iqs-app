@@ -102,7 +102,7 @@ export function VistaClienteModal({
         </SheetHeader>
 
         {/* Preview card */}
-        <div className="rounded-xl border bg-[#f0fdf4] px-4 py-4 text-sm font-mono whitespace-pre-wrap leading-relaxed text-[#1a1a1a] mb-4">
+        <div className="rounded-xl border border-border bg-muted px-4 py-4 text-sm font-mono whitespace-pre-wrap leading-relaxed text-foreground mb-4">
           {text}
         </div>
 

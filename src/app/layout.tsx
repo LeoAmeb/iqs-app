@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="h-full antialiased">
-      <body className={`${inter.className} min-h-full bg-[#fafafa]`}>
+      <body className={`${inter.className} min-h-full bg-background`}>
         <Providers>
           {children}
           <Toaster position="top-center" richColors closeButton />

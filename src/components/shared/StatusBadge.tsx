@@ -1,4 +1,4 @@
-import { PedidoStatus } from "@/generated/prisma";
+﻿import { PedidoStatus } from "@/generated/prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_LABELS, STATUS_CLASSES, cn } from "@/lib/utils";
 
