@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Menu, LogOut, User } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { useUiStore } from "@/store/uiStore";
 import {
   DropdownMenu,
@@ -14,11 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/dashboard":  "Dashboard",
-  "/cotizador":  "Cotizador",
-  "/pedidos":    "Pedidos",
-  "/clientes":   "Clientes",
-  "/usuarios":   "Usuarios",
+  "/dashboard":   "Dashboard",
+  "/cotizador":   "Cotizador",
+  "/pedidos":     "Pedidos",
+  "/produccion":  "Producción",
+  "/clientes":    "Clientes",
+  "/usuarios":    "Usuarios",
 };
 
 /** Topbar visible solo en mobile (< md). En desktop el sidebar lleva logo y user. */
@@ -33,7 +35,7 @@ export function AppHeader() {
     )?.[1] ?? "IdeasQSolucionan";
 
   return (
-    <header className="md:hidden flex items-center gap-3 px-4 h-12 border-b border-border bg-white sticky top-0 z-50">
+    <header className="md:hidden flex items-center gap-3 px-4 h-12 border-b border-border bg-card sticky top-0 z-50">
       {/* Hamburger */}
       <button
         onClick={() => setSidebarOpen(true)}
@@ -47,6 +49,8 @@ export function AppHeader() {
       <span className="flex-1 text-sm font-semibold text-foreground truncate">
         {title}
       </span>
+
+      <ThemeToggle className="h-8 w-8" />
 
       {/* User dropdown compacto */}
       <DropdownMenu>

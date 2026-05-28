@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getAutoStatus } from "@/lib/utils";
-import { PedidoStatus, FormaPago } from "@/generated/prisma";
+import { PedidoStatus, FormaPago } from "@/generated/prisma/client";
 
 // Tipos del formato legacy (HTML original)
 interface LegacyPedido {

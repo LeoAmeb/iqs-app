@@ -42,6 +42,7 @@ model User {
   createdAt     DateTime       @default(now())
   cotizaciones  Cotizacion[]
   pedidos       Pedido[]
+  itemLogs      PedidoItemLog[]
   configuracion Configuracion?
 }
 
@@ -98,8 +99,38 @@ model Pedido {
   detalles      Json
   userId        String
   user          User          @relation(fields: [userId], references: [id])
+  items         PedidoItem[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+}
+
+model PedidoItem {
+  id           String          @id @default(cuid())
+  pedido       Pedido          @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  pedidoId     String
+  categoria    String
+  catLabel     String
+  emoji        String          @default("")
+  total        Float
+  costo        Float
+  iva          Float
+  status       String          @default("Pendiente")
+  formSnapshot Json
+  logs         PedidoItemLog[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model PedidoItemLog {
+  id         String     @id @default(cuid())
+  item       PedidoItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId     String
+  fromStatus String?
+  toStatus   String
+  nota       String?
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  createdAt  DateTime   @default(now())
 }
 
 model Configuracion {

@@ -9,11 +9,13 @@ import {
   ClipboardList,
   Users,
   UserCog,
+  Wrench,
   ChevronLeft,
   ChevronRight,
   LogOut,
   X,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/store/uiStore";
 import {
@@ -30,11 +32,12 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard",  label: "Dashboard",  icon: BarChart2 },
-  { href: "/cotizador",  label: "Cotizador",  icon: Calculator },
-  { href: "/pedidos",    label: "Pedidos",    icon: ClipboardList },
-  { href: "/clientes",   label: "Clientes",   icon: Users },
-  { href: "/usuarios",   label: "Usuarios",   icon: UserCog, adminOnly: true },
+  { href: "/dashboard",   label: "Dashboard",   icon: BarChart2 },
+  { href: "/cotizador",   label: "Cotizador",   icon: Calculator },
+  { href: "/pedidos",     label: "Pedidos",     icon: ClipboardList },
+  { href: "/produccion",  label: "Producción",  icon: Wrench },
+  { href: "/clientes",    label: "Clientes",    icon: Users },
+  { href: "/usuarios",    label: "Usuarios",    icon: UserCog, adminOnly: true },
 ];
 
 // ─── Sidebar content (reutilizado en desktop y mobile Sheet) ──────────────────
@@ -58,7 +61,7 @@ function SidebarContent({
   return (
     <div
       className={cn(
-        "flex h-full flex-col border-r border-border bg-white transition-all duration-200",
+        "flex h-full flex-col border-r border-border bg-card transition-all duration-200",
         collapsed ? "w-16" : "w-60"
       )}
     >
@@ -143,13 +146,16 @@ function SidebarContent({
       {/* User footer */}
       <div className={cn("border-t border-border p-2")}>
         {collapsed ? (
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            title="Cerrar sesión"
-            className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-          >
-            <LogOut className="size-4" />
-          </button>
+          <div className="flex flex-col gap-1">
+            <ThemeToggle className="w-full h-9" />
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              title="Cerrar sesión"
+              className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <LogOut className="size-4" />
+            </button>
+          </div>
         ) : (
           <div className="flex items-center gap-2 rounded-lg px-2 py-2">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-foreground text-background text-xs font-bold uppercase">
@@ -163,6 +169,7 @@ function SidebarContent({
                 {session?.user?.role === "ADMIN" ? "Administrador" : "Empleado"}
               </p>
             </div>
+            <ThemeToggle className="shrink-0 h-7 w-7" />
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
               title="Cerrar sesión"
