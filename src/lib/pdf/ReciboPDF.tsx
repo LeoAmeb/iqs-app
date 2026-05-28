@@ -6,6 +6,15 @@ import {
   View,
   StyleSheet,
 } from "@react-pdf/renderer";
+import { formatSnapshot } from "@/lib/snapshotFormatter";
+
+interface PedidoItemPDF {
+  catLabel: string;
+  emoji: string;
+  total: number;
+  categoria?: string;
+  formSnapshot?: Record<string, unknown>;
+}
 
 interface ReciboPDFProps {
   folio: number;
@@ -19,6 +28,7 @@ interface ReciboPDFProps {
   fechaEntrega?: string | null;
   horaEntrega?: string | null;
   notas?: string | null;
+  items?: PedidoItemPDF[];
 }
 
 function fmt(n: number): string {
@@ -177,6 +187,26 @@ const styles = StyleSheet.create({
     fontSize: 7,
     color: "#aaa",
   },
+  detailsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingLeft: 8,
+    paddingTop: 4,
+    paddingBottom: 6,
+    gap: 4,
+  },
+  detailCell: {
+    width: "48%",
+    marginBottom: 3,
+  },
+  detailLabel: {
+    fontSize: 7,
+    color: "#999",
+  },
+  detailValue: {
+    fontSize: 8,
+    color: "#333",
+  },
 });
 
 export function ReciboPDF({
@@ -191,6 +221,7 @@ export function ReciboPDF({
   fechaEntrega,
   horaEntrega,
   notas,
+  items,
 }: ReciboPDFProps) {
   const pagado = saldo <= 0;
 
@@ -235,6 +266,37 @@ export function ReciboPDF({
               </Text>
             </View>
           </View>
+        )}
+
+        {/* Products table (multi-product orders) */}
+        {items && items.length > 1 && (
+          <>
+            <Text style={styles.sectionTitle}>Productos</Text>
+            {items.map((item, i) => {
+              const details = item.categoria && item.formSnapshot
+                ? formatSnapshot(item.categoria, item.formSnapshot)
+                : [];
+              return (
+                <View key={i}>
+                  <View style={styles.row}>
+                    <Text style={styles.rowLabel}>{item.catLabel}</Text>
+                    <Text style={styles.rowVal}>{fmt(item.total)}</Text>
+                  </View>
+                  {details.length > 0 && (
+                    <View style={styles.detailsGrid}>
+                      {details.map((d, j) => (
+                        <View key={j} style={styles.detailCell}>
+                          <Text style={styles.detailLabel}>{d.label}</Text>
+                          <Text style={styles.detailValue}>{d.value}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              );
+            })}
+            <View style={{ marginBottom: 20 }} />
+          </>
         )}
 
         {/* Resumen de pago */}

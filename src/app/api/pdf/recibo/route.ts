@@ -20,6 +20,12 @@ export async function POST(req: NextRequest) {
 
   const pedido = await prisma.pedido.findUnique({
     where: { id: pedidoId },
+    include: {
+      items: {
+        select: { categoria: true, catLabel: true, emoji: true, total: true, formSnapshot: true },
+        orderBy: { createdAt: "asc" },
+      },
+    },
   });
 
   if (!pedido) {
@@ -57,6 +63,15 @@ export async function POST(req: NextRequest) {
     fechaEntrega,
     horaEntrega: (detalles.horaEntrega as string | null) ?? null,
     notas: pedido.notas ?? null,
+    items: pedido.items.length > 0
+      ? pedido.items.map((i) => ({
+          catLabel: i.catLabel,
+          emoji: i.emoji,
+          total: i.total,
+          categoria: i.categoria,
+          formSnapshot: i.formSnapshot as Record<string, unknown>,
+        }))
+      : undefined,
   });
 
   const buffer = await renderToBuffer(element as Parameters<typeof renderToBuffer>[0]);

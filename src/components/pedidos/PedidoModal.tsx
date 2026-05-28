@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2Icon, CheckCircle2Icon, XCircleIcon, DownloadIcon } from "lucide-react";
-import { PedidoStatus, FormaPago } from "@/generated/prisma";
+import { Loader2Icon, CheckCircle2Icon, XCircleIcon, DownloadIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { PedidoStatus, FormaPago } from "@/generated/prisma/client";
 import {
   Sheet,
   SheetContent,
@@ -36,6 +36,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { fmt, folioStr, fmtFecha } from "@/lib/utils";
+import { getStage } from "@/lib/productionConfig";
+import { formatSnapshot } from "@/lib/snapshotFormatter";
 import type { Pedido } from "./PedidoCard";
 
 interface PedidoModalProps {
@@ -70,6 +72,7 @@ function toTimeInput(date: Date | string | null | undefined): string {
 export function PedidoModal({ pedido, onClose }: PedidoModalProps) {
   const qc = useQueryClient();
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
 
   const [telefono, setTelefono] = useState(pedido?.telefono ?? "");
   const [anticipo, setAnticipo] = useState(String(pedido?.anticipo ?? 0));
@@ -235,6 +238,72 @@ export function PedidoModal({ pedido, onClose }: PedidoModalProps) {
               </p>
             </div>
           </div>
+
+          {/* Products breakdown */}
+          {pedido.items && pedido.items.length > 0 && (
+            <div className="mb-4">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                Productos
+              </p>
+              <div className="space-y-1.5">
+                {pedido.items.map((item) => {
+                  const stage = getStage(item.status);
+                  return (
+                    <div
+                      key={item.id}
+                      className="rounded-lg border border-border overflow-hidden"
+                    >
+                      <button
+                        className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted/40 transition-colors"
+                        onClick={() => setExpandedItem(expandedItem === item.id ? null : item.id)}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-base leading-none shrink-0">{item.emoji}</span>
+                          <span className="text-sm text-foreground truncate">{item.catLabel}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                          <span className="text-sm font-semibold">{fmt(item.total)}</span>
+                          <span
+                            className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap"
+                            style={{
+                              backgroundColor: `${stage.color}20`,
+                              color: stage.color,
+                            }}
+                          >
+                            {stage.label}
+                          </span>
+                          {expandedItem === item.id
+                            ? <ChevronUpIcon className="size-3.5 text-muted-foreground shrink-0" />
+                            : <ChevronDownIcon className="size-3.5 text-muted-foreground shrink-0" />
+                          }
+                        </div>
+                      </button>
+                      {expandedItem === item.id && item.formSnapshot && (
+                        <div className="border-t border-border bg-muted/20 px-3 py-2.5">
+                          {(() => {
+                            const details = formatSnapshot(item.categoria, item.formSnapshot);
+                            if (details.length === 0) return (
+                              <p className="text-xs text-muted-foreground">Sin detalles disponibles.</p>
+                            );
+                            return (
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                                {details.map((d, i) => (
+                                  <div key={i} className="flex flex-col">
+                                    <span className="text-[10px] text-muted-foreground">{d.label}</span>
+                                    <span className="text-xs font-medium text-foreground">{d.value}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <Separator className="mb-4" />
 

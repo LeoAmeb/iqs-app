@@ -29,7 +29,13 @@ export async function GET(req: NextRequest) {
   const pedidos = await prisma.pedido.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    include: { cliente: { select: { nombre: true, telefono: true } } },
+    include: {
+      cliente: { select: { nombre: true, telefono: true } },
+      items: {
+        select: { id: true, categoria: true, catLabel: true, emoji: true, total: true, status: true, formSnapshot: true },
+        orderBy: { createdAt: "asc" },
+      },
+    },
   });
 
   return NextResponse.json(pedidos);

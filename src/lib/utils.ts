@@ -1,6 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
+﻿import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { PedidoStatus } from "@/generated/prisma";
+import { PedidoStatus } from "@/generated/prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

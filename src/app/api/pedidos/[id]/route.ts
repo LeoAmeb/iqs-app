@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getAutoStatus } from "@/lib/utils";
-import { PedidoStatus, FormaPago } from "@/generated/prisma";
+import { PedidoStatus, FormaPago } from "@/generated/prisma/client";
 
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();

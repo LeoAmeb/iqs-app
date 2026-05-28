@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon, ReceiptIcon } from "lucide-react";
-import { PedidoStatus, FormaPago } from "@/generated/prisma";
+import { PedidoStatus, FormaPago } from "@/generated/prisma/client";
 import {
   Card,
   CardHeader,
@@ -15,6 +15,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { fmt, folioStr, fmtFecha } from "@/lib/utils";
+
+export interface PedidoItem {
+  id: string;
+  categoria: string;
+  catLabel: string;
+  emoji: string;
+  total: number;
+  status: string;
+  formSnapshot?: Record<string, unknown>;
+}
 
 export interface Pedido {
   id: string;
@@ -31,6 +41,7 @@ export interface Pedido {
   fechaEntrega?: Date | string | null;
   notas?: string | null;
   createdAt: Date | string;
+  items?: PedidoItem[];
 }
 
 const FORMA_PAGO_LABELS: Record<FormaPago, string> = {
@@ -112,16 +123,36 @@ export function PedidoCard({ pedido, onClick }: PedidoCardProps) {
 
           <Separator className="mb-3" />
 
-          {/* Client + category */}
-          <div className="mb-3 space-y-1 text-sm">
+          {/* Client + products */}
+          <div className="mb-3 space-y-1.5 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Cliente</span>
               <span className="font-medium">{pedido.clienteNombre}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Producto</span>
-              <span>{pedido.catLabel}</span>
-            </div>
+            {pedido.items && pedido.items.length > 1 ? (
+              <div>
+                <span className="text-muted-foreground">Productos</span>
+                <div className="mt-1.5 space-y-1 pl-1">
+                  {pedido.items.map((item) => (
+                    <div key={item.id} className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        {item.emoji} {item.catLabel}
+                      </span>
+                      <span className="font-medium">{fmt(item.total)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Producto</span>
+                <span>
+                  {pedido.items?.[0]
+                    ? `${pedido.items[0].emoji} ${pedido.items[0].catLabel}`
+                    : pedido.catLabel}
+                </span>
+              </div>
+            )}
           </div>
 
           <Separator className="mb-3" />
